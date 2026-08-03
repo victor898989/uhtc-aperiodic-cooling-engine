@@ -1,0 +1,30 @@
+{
+  "name": "UHTC Engine Dev Environment",
+  "image": "mcr.microsoft.com/devcontainers/dotnet:1-8.0-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/cpp:1": {
+      "version": "latest",
+      "compiler": "gcc"
+    },
+    "ghcr.io/devcontainers/features/cmake:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/nvidia-cuda:1": {
+      "cudaVersion": "12.4.1"
+    },
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "postCreateCommand": "dotnet restore src/CSharp/UhtcAperiodicCoolingEngine.csproj && chmod +x scripts/*.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csdevkit",
+        "ms-vscode.cpptools",
+        "ms-vscode.cmake-tools",
+        "NVIDIA.nsight-vscode-edition"
+      ]
+    }
+  },
+  "remoteUser": "codespace"
+}

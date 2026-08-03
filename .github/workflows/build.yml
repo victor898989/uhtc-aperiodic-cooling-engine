@@ -1,0 +1,36 @@
+name: UHTC Build Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-csharp:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: Restore dependencies
+      run: dotnet restore src/CSharp/UhtcAperiodicCoolingEngine.csproj
+    - name: Build C# project
+      run: dotnet build src/CSharp/UhtcAperiodicCoolingEngine.csproj --no-restore
+
+  build-native:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install CUDA toolkit
+      uses: Jimver/cuda-toolkit@v0.2.11
+      with:
+        cuda: '12.4.1'
+        method: 'network'
+        sub-packages: '["nvcc", "cudart"]'
+    - name: Configure CMake
+      run: cmake -B build -S .
+    - name: Build native library
+      run: cmake --build build --config Release
