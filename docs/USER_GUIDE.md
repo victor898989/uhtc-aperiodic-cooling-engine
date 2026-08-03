@@ -277,6 +277,10 @@ var config = new UhcFpgaConfig { XclbinPath = "build/xclbin/uhtc_laser.xclbin", 
 NativeBridge.FpgaOpen(in config);
 ```
 
+## Further Reading
+
+- `THEORY.md` — Full theoretical reference: UHTC monolithic structures, tortuous-path oxygen barrier, hyperdimensional crystallography (Cut-and-Project 6D→3D), governing equations, LEAP71 OOP architecture, and material database.
+
 ## License
 
 Apache-2.0. See `LICENSE`.

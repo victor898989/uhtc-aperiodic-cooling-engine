@@ -137,7 +137,8 @@ uhtc-aperiodic-cooling-engine/
 │   │   │       └── xrt_host_driver.cpp       # Alveo XRT host driver
 │   │   └── PikoGK/                  # PicoGK voxelisation runtime
 │   ├── Docs/
-│   │   └── USER_GUIDE.md            # End-user documentation
+│   │   ├── USER_GUIDE.md            # End-user documentation
+│   │   └── THEORY.md                # UHTC physics, crystallography, equations
 │   └── Slices/                      # Bitmap export CLI
 ├── build/                           # cmake build artefacts
 ├── CMakeLists.txt                   # Top-level CMake (add_subdirectory)
