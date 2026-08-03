@@ -4,24 +4,19 @@ project(UHTCNativeAccel LANGUAGES CXX CUDA)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CUDA_STANDARD 17)
 
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Native/Common
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Native/Cuda
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/Native/PikoGK
-)
+# ==================================================================
+#  Unified Native Engine (CUDA + FPGA HLS + Bridge API)
+# ==================================================================
+add_subdirectory(src/Native)
 
-file(GLOB_RECURSE CUDA_SOURCES
-    "src/Native/Cuda/*.cu"
-    "src/Native/Cuda/*.cpp"
-    "src/Native/Cuda/OpenDB_Examples/*.cu"
-    "src/Native/Cuda/OpenDB_Examples/*.cpp"
-)
-
-add_library(uhtc_native_accel SHARED ${CUDA_SOURCES})
-
-set_target_properties(uhtc_native_accel PROPERTIES
-    CUDA_SEPARABLE_COMPILATION ON
-    POSITION_INDEPENDENT_CODE ON
-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/lib
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/bin
-)
+# ==================================================================
+#  Summary
+# ==================================================================
+message(STATUS "")
+message(STATUS "=== UHTC Aperiodic Cooling Engine — Top-Level Build ===")
+message(STATUS "  C# solution    : UHTCEngine.sln  (src/CSharp/UhtcAperiodicCoolingEngine.csproj)")
+message(STATUS "  Native library : build/lib/libuhtc_native_accel.so")
+message(STATUS "  FPGA kernels   : build/xclbin/  (requires Vitis 2024.1+)")
+message(STATUS "  C API header   : src/Native/FPGA/Bridge/NativeEngineAPI.h")
+message(STATUS "  C# interop     : src/CSharp/Interop/UnsafeNativeMethods.cs")
+message(STATUS "========================================================")
