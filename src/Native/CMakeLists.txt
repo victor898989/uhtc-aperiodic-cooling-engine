@@ -106,6 +106,59 @@ add_library(uhtc_fpga_driver STATIC
 target_link_libraries(uhtc_fpga_driver PUBLIC uhtc_native_accel)
 
 # ==================================================================
+#  CUDA kernel unit tests (uhc_cuda_test_harness)
+# ==================================================================
+add_executable(uhc_cuda_test_harness
+    Cuda/tests/uhc_test_kernels.cu
+    Cuda/uhc_kinetic_solver.cu
+    Cuda/uhc_oxygen_diffusion.cu
+    Cuda/uhc_material_properties.h
+)
+set_target_properties(uhc_cuda_test_harness PROPERTIES
+    CUDA_SEPARABLE_COMPILATION ON
+    CUDA_ARCHITECTURES "70;75;80;86"
+)
+target_compile_definitions(uhc_cuda_test_harness PRIVATE
+    NANOVDB_USE_CUDA=1
+    NANOVDB_USE_OPENVDB=1
+)
+target_include_directories(uhc_cuda_test_harness PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/Cuda
+)
+target_link_libraries(uhc_cuda_test_harness PRIVATE uhtc_native_accel)
+
+# Register with ctest (only if CUDA is available)
+if(CMAKE_CUDA_COMPILER)
+    enable_testing()
+    add_test(NAME uhc_cuda_kernel_tests
+             COMMAND uhc_cuda_test_harness
+             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    set_tests_properties(uhc_cuda_kernel_tests PROPERTIES
+        DISABLED $<NOT:$<BOOL:${CUDA_FOUND}>>
+        LABELS "cuda;native")
+endif()
+
+# ==================================================================
+#  C API smoke test (verifies all DllImport symbols resolve)
+# ==================================================================
+add_executable(uhc_api_smoke_test
+    FPGA/Bridge/NativeEngineAPI.cpp
+    Cuda/tests/test_api_smoke.c
+)
+set_target_properties(uhc_api_smoke_test PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+)
+target_link_libraries(uhc_api_smoke_test PRIVATE uhtc_native_accel)
+
+if(CMAKE_CUDA_COMPILER)
+    add_test(NAME uhc_api_smoke
+             COMMAND uhc_api_smoke_test
+             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    set_tests_properties(uhc_api_smoke PROPERTIES
+        LABELS "native;smoke")
+endif()
+
+# ==================================================================
 #  Summary
 # ==================================================================
 message(STATUS "")
@@ -114,6 +167,8 @@ message(STATUS "  CUDA library      : uhtc_native_accel")
 message(STATUS "  Bridge header     : FPGA/Bridge/NativeEngineAPI.h")
 message(STATUS "  FPGA HLS kernels  : FPGA/hls/laser_controller.cpp")
 message(STATUS "  FPGA host driver  : FPGA/drivers/zcu104_driver.cpp")
+message(STATUS "  CUDA tests        : uhc_cuda_test_harness  (ctest: uhc_cuda_kernel_tests)")
+message(STATUS "  API smoke test    : uhc_api_smoke_test     (ctest: uhc_api_smoke)")
 if(VITIS_HLS_EXE)
     message(STATUS "  XRT kernel target : uhtc_xrt_kernels (OBJECT for v++)")
 endif()

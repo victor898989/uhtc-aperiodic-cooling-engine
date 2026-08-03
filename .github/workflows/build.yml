@@ -1,4 +1,4 @@
-name: UHTC Build Pipeline
+name: UHTC Build & Test Pipeline
 
 on:
   push:
@@ -19,6 +19,12 @@ jobs:
       run: dotnet restore src/CSharp/UhtcAperiodicCoolingEngine.csproj
     - name: Build C# project
       run: dotnet build src/CSharp/UhtcAperiodicCoolingEngine.csproj --no-restore
+    - name: Restore test dependencies
+      run: dotnet restore src/CSharp/Tests/UhtcEngine.Tests.csproj
+    - name: Build test project
+      run: dotnet build src/CSharp/Tests/UhtcEngine.Tests.csproj --no-restore
+    - name: Run xUnit tests (C#)
+      run: dotnet test src/CSharp/Tests/UhtcEngine.Tests.csproj --no-build --logger "console;verbosity=detailed"
 
   build-native:
     runs-on: ubuntu-latest
@@ -31,6 +37,38 @@ jobs:
         method: 'network'
         sub-packages: '["nvcc", "cudart"]'
     - name: Configure CMake
-      run: cmake -B build -S .
+      run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DUHC_BUILD_BRIDGE=ON
     - name: Build native library
-      run: cmake --build build --config Release
+      run: cmake --build build --config Release --parallel
+    - name: Run CUDA kernel tests
+      working-directory: build/src/Native
+      run: |
+        if [ -f uhc_cuda_test_harness ]; then
+          ./uhc_cuda_test_harness
+        else
+          echo "CUDA test harness not built — skipping"
+        fi
+    - name: Run API smoke test
+      working-directory: build/src/Native
+      run: |
+        if [ -f uhc_api_smoke_test ]; then
+          ./uhc_api_smoke_test
+        else
+          echo "API smoke test not built — skipping"
+        fi
+
+  cmake-smoke:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+    - uses: actions/checkout@v4
+    - name: Configure CMake
+      run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+    - name: Verify CMake targets
+      run: |
+        cmake --build build --config Release --target help 2>&1 | tee build_targets.txt
+        echo "Available targets:"
+        cat build_targets.txt
