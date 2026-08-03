@@ -50,3 +50,5 @@ uhtc-aperiodic-cooling-engine/
 ├── slices/                      # Direct Bitmap Export (PNG 16-bit/CLI)
 ├── LICENSE
 └── README.md                    # Main Project Documentation
+
+# github: https://github.com/AcademySoftwareFoundation/openvdb/blob/master/nanovdb/nanovdb/examples/ex_dilate_nanovdb_cuda/dilate_nanovdb_cuda.cpp
