@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "YglqFPI1pSM=",
+  "success": true,
+  "projectFilePath": "/workspaces/uhtc-aperiodic-cooling-engine/src/CSharp/UhtcAperiodicCoolingEngine.csproj",
+  "expectedPackageFiles": [
+    "/home/vscode/.nuget/packages/picogk/1.7.6/picogk.1.7.6.nupkg.sha512"
+  ],
+  "logs": []
+}

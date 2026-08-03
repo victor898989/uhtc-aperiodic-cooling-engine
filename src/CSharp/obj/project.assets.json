@@ -1,0 +1,150 @@
+{
+  "version": 3,
+  "targets": {
+    "net9.0": {
+      "PicoGK/1.7.6": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/PicoGK.dll": {}
+        },
+        "runtime": {
+          "lib/net9.0/PicoGK.dll": {}
+        },
+        "runtimeTargets": {
+          "runtimes/osx-arm64/native/picogk.1.7.dylib": {
+            "assetType": "native",
+            "rid": "osx-arm64"
+          },
+          "runtimes/osx-arm64/native/picogk.1.7_liblzma.5.dylib": {
+            "assetType": "native",
+            "rid": "osx-arm64"
+          },
+          "runtimes/osx-arm64/native/picogk.1.7_libzstd.1.dylib": {
+            "assetType": "native",
+            "rid": "osx-arm64"
+          },
+          "runtimes/win-x64/native/blosc.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/lz4.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/picogk.1.7.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/tbb12.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/zlib1.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/zstd.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "PicoGK/1.7.6": {
+      "sha512": "yHTc8mQChgFskvl6oXejmZB8OIhPLM/iiMXnwCLTNUVdSfc3r1CFWPG21ZGAHb2ORf/ANkL20lJUwC/SchClPg==",
+      "type": "package",
+      "path": "picogk/1.7.6",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net9.0/PicoGK.dll",
+        "picogk.1.7.6.nupkg.sha512",
+        "picogk.nuspec",
+        "runtimes/osx-arm64/native/picogk.1.7.dylib",
+        "runtimes/osx-arm64/native/picogk.1.7_liblzma.5.dylib",
+        "runtimes/osx-arm64/native/picogk.1.7_libzstd.1.dylib",
+        "runtimes/win-x64/native/blosc.dll",
+        "runtimes/win-x64/native/lz4.dll",
+        "runtimes/win-x64/native/picogk.1.7.dll",
+        "runtimes/win-x64/native/tbb12.dll",
+        "runtimes/win-x64/native/zlib1.dll",
+        "runtimes/win-x64/native/zstd.dll"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net9.0": [
+      "PicoGK >= 1.7.6"
+    ]
+  },
+  "packageFolders": {
+    "/home/vscode/.nuget/packages/": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "/workspaces/uhtc-aperiodic-cooling-engine/src/CSharp/UhtcAperiodicCoolingEngine.csproj",
+      "projectName": "UhtcAperiodicCoolingEngine",
+      "projectPath": "/workspaces/uhtc-aperiodic-cooling-engine/src/CSharp/UhtcAperiodicCoolingEngine.csproj",
+      "packagesPath": "/home/vscode/.nuget/packages/",
+      "outputPath": "/workspaces/uhtc-aperiodic-cooling-engine/src/CSharp/obj/",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "/home/vscode/.nuget/NuGet/NuGet.Config"
+      ],
+      "originalTargetFrameworks": [
+        "net9.0"
+      ],
+      "sources": {
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "projectReferences": {}
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "9.0.300"
+    },
+    "frameworks": {
+      "net9.0": {
+        "targetAlias": "net9.0",
+        "dependencies": {
+          "PicoGK": {
+            "target": "Package",
+            "version": "[1.7.6, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.316/PortableRuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}
