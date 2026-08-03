@@ -1,6 +1,8 @@
 # uhtc-aperiodic-cooling-engine
 Quasicrystals 6D / UHTC Aperiodic insulation. Lattice of tantalum microfibers in zirconium matrix and modified boron silicate to block diffusive oxygen percolation. Cooling System ActivoLEAP71_LatticeLibrary Orchestration of heat exchange networks.
 
+# Book-of-crystalography:https://www.xray.cz/kryst/struktury.pdf
+
 # UHTC Aperiodic Cooling Engine
 
 ![C# 12](https://img.shields.io/badge/C%23-12-blue)
