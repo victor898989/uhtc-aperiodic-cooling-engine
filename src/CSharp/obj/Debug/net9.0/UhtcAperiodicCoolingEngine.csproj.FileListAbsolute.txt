@@ -1,0 +1,6 @@
+/workspaces/uhtc-aperiodic-cooling-engine/src/CSharp/obj/Debug/net9.0/UhtcAperiodicCoolingEngine.csproj.AssemblyReference.cache
+/workspaces/uhtc-aperiodic-cooling-engine/src/CSharp/obj/Debug/net9.0/UhtcAperiodicCoolingEngine.GeneratedMSBuildEditorConfig.editorconfig
+/workspaces/uhtc-aperiodic-cooling-engine/src/CSharp/obj/Debug/net9.0/UhtcAperiodicCoolingEngine.AssemblyInfoInputs.cache
+/workspaces/uhtc-aperiodic-cooling-engine/src/CSharp/obj/Debug/net9.0/UhtcAperiodicCoolingEngine.AssemblyInfo.cs
+/workspaces/uhtc-aperiodic-cooling-engine/src/CSharp/obj/Debug/net9.0/UhtcAperiodicCoolingEngine.csproj.CoreCompileInputs.cache
+/workspaces/uhtc-aperiodic-cooling-engine/src/CSharp/obj/Debug/net9.0/UhtcAperiodicCoolingEngine.sourcelink.json

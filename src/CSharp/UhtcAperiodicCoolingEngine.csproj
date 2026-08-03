@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <NativeReference Include="../Native/build/libuhtc_native_accel.so" />
+    <Compile Remove="Tests/**/*.cs" />
   </ItemGroup>
 
 </Project>
