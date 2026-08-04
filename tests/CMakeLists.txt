@@ -11,3 +11,12 @@ if(CMAKE_CUDA_COMPILER)
     set_target_properties(cuda_smoke_test PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
     add_test(NAME cuda_smoke COMMAND cuda_smoke_test)
 endif()
+
+add_executable(openvdb_io_smoke_test geometry/openvdb_io_smoke_test.cpp)
+add_test(NAME openvdb_io_smoke COMMAND openvdb_io_smoke_test)
+
+if(CMAKE_CUDA_COMPILER)
+    add_executable(nanovdb_smoke_test cuda/nanovdb_smoke_test.cu)
+    set_target_properties(nanovdb_smoke_test PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+    add_test(NAME nanovdb_smoke COMMAND nanovdb_smoke_test)
+endif()
