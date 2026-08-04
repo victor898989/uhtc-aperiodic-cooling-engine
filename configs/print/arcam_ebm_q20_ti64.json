@@ -1,0 +1,27 @@
+{
+  "printer": {
+    "name": "Arcam EBM Q20+",
+    "type": "EBM",
+    "build_volume": [200.0, 200.0, 380.0],
+    "beam_count": 1,
+    "max_beam_power": 3000.0,
+    "max_scan_speed": 8000.0,
+    "min_layer_thickness": 0.05,
+    "max_layer_thickness": 0.2,
+    "chamber_temperature": 800.0,
+    "vacuum_level": 1e-4
+  },
+  "material": "Ti64",
+  "process": {
+    "beam_power": 1500.0,
+    "scan_speed": 5000.0,
+    "layer_thickness": 0.07,
+    "energy_density": 42.9
+  },
+  "output": {
+    "voxel_grid": "build/output/geometry_voxels.bin",
+    "thermal_field": "build/output/thermal_field.bin",
+    "slices_dir": "build/output/slices/",
+    "slice_format": "png16"
+  }
+}

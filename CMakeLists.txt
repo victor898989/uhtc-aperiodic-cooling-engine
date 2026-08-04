@@ -17,6 +17,7 @@ add_subdirectory(src/core)
 add_subdirectory(src/cuda)
 add_subdirectory(src/slicing)
 add_subdirectory(src/io)
+add_subdirectory(src/printing)
 add_subdirectory(tests)
 
 # ==================================================================
@@ -29,4 +30,5 @@ message(STATUS "  Native library : build/lib/libuhtc_native_accel.so")
 message(STATUS "  FPGA kernels   : build/xclbin/  (requires Vitis 2024.1+)")
 message(STATUS "  C API header   : src/Native/FPGA/Bridge/NativeEngineAPI.h")
 message(STATUS "  C# interop     : src/CSharp/Interop/UnsafeNativeMethods.cs")
+message(STATUS "  3D Print engine: src/printing/ (EOS, SLM, Renishaw, Arcam, DMG Mori, Lithoz)")
 message(STATUS "========================================================")

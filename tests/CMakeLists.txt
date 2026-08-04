@@ -29,3 +29,15 @@ if(CMAKE_CUDA_COMPILER)
     set_target_properties(cuda_e2e_saxpy_test PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
     add_test(NAME cuda_e2e_saxpy COMMAND cuda_e2e_saxpy_test)
 endif()
+
+add_executable(printing_materials_smoke_test printing/printing_materials_smoke.cpp)
+target_include_directories(printing_materials_smoke_test PRIVATE ${CMAKE_SOURCE_DIR}/src/printing)
+add_test(NAME printing_materials_smoke COMMAND printing_materials_smoke_test)
+
+add_executable(printer_profiles_smoke_test printing/printer_profiles_smoke.cpp)
+target_include_directories(printer_profiles_smoke_test PRIVATE ${CMAKE_SOURCE_DIR}/src/printing)
+add_test(NAME printer_profiles_smoke COMMAND printer_profiles_smoke_test)
+
+add_executable(wov2_structure_smoke_test printing/wov2_structure_smoke.cpp)
+target_include_directories(wov2_structure_smoke_test PRIVATE ${CMAKE_SOURCE_DIR}/src/printing)
+add_test(NAME wov2_structure_smoke COMMAND wov2_structure_smoke_test)

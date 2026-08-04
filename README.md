@@ -16,6 +16,25 @@ Quasicrystals 6D / UHTC Aperiodic insulation. Lattice of tantalum microfibers in
 
 El sistema combina **geometrías aperiódicas cuasicristalinas en 6D** para bloquear la percolación difusiva del oxígeno atómico ($O_2$), redes **TPMS/Giroides** para refrigeración activa regenerativa, y un motor de **voxelización implícita nativa (0% error de cordal)** paralelizado mediante la capa de runtime **Xilinx XRT** y **Vitis AI Engines (AIE)**.
 
+## 🖨️ 3D Printing Engine
+
+El módulo de impresión 3D es el **corazón del sistema de fabricación**. Define cómo se fabrican las piezas, genera vóxeles, rebanadas, campos térmicos y produce los archivos que las impresoras industriales realmente usan.
+
+**Impresoras soportadas:**
+- EOS M400-4 (LPBF)
+- SLM Solutions NXG XII 600 (LPBF)
+- Renishaw RenAM 500Q (LPBF)
+- Arcam EBM Q20+ (EBM)
+- DMG Mori Lasertec 4300 (DED híbrido)
+- Lithoz CeraFab S65 (cerámica avanzada)
+
+**Materiales soportados:**
+- Inconel 718
+- Ti-6Al-4V (Ti64)
+- UHTC (ZrB2/TaC)
+- Monolithic Woven II
+- Ceramics (modified boron silicate)
+
 ---
 
 ## 📁 Repository Structure
@@ -27,7 +46,8 @@ uhtc-aperiodic-cooling-engine/
 ├── docs/
 │   ├── books/                   # PDF References (De Graef & McHenry, ECSS Design)
 │   ├── materials/               # Notes on UHTC, Modified Boron Silicate, ZrB2/Ta
-│   └── architecture/            # Software and Data Flow Diagrams
+│   ├── architecture/            # Software and Data Flow Diagrams
+│   └── printing/                # 3D Printing Engine documentation
 ├── src/
 │   ├── CSharp/                  # C# orchestration (LEAP71, PikoGK bridge, physics)
 │   ├── Native/                  # Existing CUDA/FPGA runtime and kernels
@@ -43,17 +63,24 @@ uhtc-aperiodic-cooling-engine/
 │   ├── slicing/
 │   │   ├── png16/               # Export slices 16-bit
 │   │   └── marching/            # Marching cubes / marching tetrahedra
-│   └── io/
-│       ├── json/                # Configuración
-│       └── bin/                 # Formatos binarios (OpenVDB IO)
+│   ├── io/
+│   │   ├── json/                # Configuración
+│   │   └── bin/                 # Formatos binarios (OpenVDB IO)
+│   └── printing/                # 3D Printing Engine (EOS, SLM, Renishaw, Arcam, DMG Mori, Lithoz)
+│       ├── printers/            # Printer profiles
+│       ├── materials/           # Material models (Inconel, Ti64, UHTC, Woven II, Ceramic)
+│       ├── pipeline/            # Manufacturing pipeline stages
+│       └── wov2/               # Monolithic Woven II implementation
 ├── configs/
 │   ├── voxel_config.json
 │   ├── thermal_config.json
-│   └── slicing_config.json
+│   ├── slicing_config.json
+│   └── print/                   # Printer-specific configurations
 ├── tests/
 │   ├── geometry/
 │   ├── thermal/
-│   └── cuda/
+│   ├── cuda/
+│   └── printing/                # 3D printing engine tests
 ├── tasks/
 │   └── TASKS.md
 ├── cmake/

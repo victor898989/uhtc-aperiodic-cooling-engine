@@ -1,0 +1,26 @@
+{
+  "printer": {
+    "name": "SLM Solutions NXG XII 600",
+    "type": "LPBF",
+    "build_volume": [600.0, 600.0, 600.0],
+    "laser_count": 12,
+    "max_laser_power": 1000.0,
+    "max_scan_speed": 10000.0,
+    "min_layer_thickness": 0.02,
+    "max_layer_thickness": 0.075
+  },
+  "material": "Ti64",
+  "process": {
+    "laser_power": 280.0,
+    "scan_speed": 1200.0,
+    "hatch_spacing": 0.1,
+    "layer_thickness": 0.03,
+    "energy_density": 77.8
+  },
+  "output": {
+    "voxel_grid": "build/output/geometry_voxels.bin",
+    "thermal_field": "build/output/thermal_field.bin",
+    "slices_dir": "build/output/slices/",
+    "slice_format": "png16"
+  }
+}

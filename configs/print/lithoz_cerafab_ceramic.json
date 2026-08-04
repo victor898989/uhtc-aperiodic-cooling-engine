@@ -1,0 +1,26 @@
+{
+  "printer": {
+    "name": "Lithoz CeraFab S65",
+    "type": "Ceramic_Vat",
+    "build_volume": [65.0, 65.0, 75.0],
+    "light_wavelength": 385.0,
+    "pixel_size": 50.0,
+    "resolution": [1920, 1080],
+    "min_layer_thickness": 0.01,
+    "max_layer_thickness": 0.1
+  },
+  "material": "AdvancedCeramic",
+  "process": {
+    "layer_thickness": 0.05,
+    "green_density": 0.55,
+    "sintering_temperature": 1300.0,
+    "sintering_time": 4.0,
+    "sintering_shrinkage": 0.20
+  },
+  "output": {
+    "voxel_grid": "build/output/geometry_voxels.bin",
+    "thermal_field": "build/output/thermal_field.bin",
+    "slices_dir": "build/output/slices/",
+    "slice_format": "png16"
+  }
+}

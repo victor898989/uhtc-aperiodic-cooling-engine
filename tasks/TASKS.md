@@ -53,3 +53,39 @@
 - [ ] `tests/cuda` — humo de kernels y rendimiento.
 - [ ] `tests/geometry/openvdb_io_smoke_test` — humo OpenVDB IO.
 - [ ] `tests/cuda/nanovdb_smoke_test` — humo NanoVDB CUDA.
+- [ ] `tests/printing` — materiales, perfiles de impresora, Woven II.
+
+## Módulo 5 — Motor de Impresión 3D (src/printing/)
+
+### Perfiles de impresora
+- [x] EOS M400-4 (LPBF)
+- [x] SLM Solutions NXG XII 600 (LPBF)
+- [x] Renishaw RenAM 500Q (LPBF)
+- [x] Arcam EBM Q20+ (EBM)
+- [x] DMG Mori Lasertec 4300 (DED)
+- [x] Lithoz CeraFab S65 (Ceramic)
+
+### Modelos de material
+- [x] Inconel 718
+- [x] Ti-6Al-4V (Ti64)
+- [x] UHTC (ZrB2/TaC)
+- [x] Monolithic Woven II
+- [x] Advanced Ceramic (modified boron silicate)
+
+### Pipeline de fabricación
+- [ ] `src/printing/pipeline/Pipeline.h` — etapas del pipeline
+- [ ] `src/printing/pipeline/Pipeline.cpp` — implementación
+- [ ] Integración con OpenVDB para voxelización
+- [ ] Integración con CUDA para slicing acelerado
+- [ ] Export de `geometry_voxels.bin`, `thermal_field.bin`, `slice_XXXX.png`
+
+### Woven II específico
+- [x] Generador de estructura aperiódica 6D
+- [x] Cálculo de tortuosidad
+- [x] Cálculo de eficiencia de bloqueo de oxígeno
+- [ ] Validación con Monte Carlo de difusión O2
+
+### Pruebas end-to-end
+- [ ] Mesh → Voxels → NanoVDB → Dilatación → Export binario
+- [ ] CUDA kernel launch + memory round-trip
+- [ ] Pipeline completo: geometry → slices → thermal → export
