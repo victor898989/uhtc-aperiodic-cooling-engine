@@ -1,52 +1,52 @@
-# Análisis de interconexión AXI (script TCL)
+# AXI interconnect analysis (TCL script)
 
-Objetivo: verificar que la interconexión AXI del sistema puede mover bloques NanoVDB sin cuellos de botella.
+Goal: verify that the system AXI interconnect can move NanoVDB blocks without bottlenecks.
 
-## Día 3 — Ejecutar análisis AXI
+## Day 3 — Run AXI analysis
 
-### 3.1 Preparación
-- Tener un diseño implementado en Vivado/Vitis.
-- Exportar el diseño `.xsa` o `.bit`.
-- Abrir Vivado TCL Console o usar `vivado -mode batch`.
+### 3.1 Preparation
+- Have an implemented design in Vivado/Vitis.
+- Export the `.xsa` or `.bit` design.
+- Open Vivado TCL Console or use `vivado -mode batch`.
 
-### 3.2 Script de análisis
-Ejecutar el script `src/Native/FPGA/axi_dtpi/analyze_axi_interconnect.tcl`.
+### 3.2 Analysis script
+Run `src/Native/FPGA/axi_dtpi/analyze_axi_interconnect.tcl`.
 
-El script:
-- Inspecciona la interconexión AXI
-- Lista amos/esclavos
-- Detecta: FIFOs, RegSlices, convertidores de protocolo, convertidores de reloj, muestras, convertidores de ancho de datos
-- Imprime tablas con la configuración AXI
+The script:
+- Inspects the AXI interconnect
+- Lists masters/slaves
+- Detects: FIFOs, RegSlices, protocol converters, clock converters, slicers, data-width converters
+- Prints tables with the AXI configuration
 
-### 3.3 Verificaciones obligatorias
-- [ ] FIFO presente entre AXI DMA y memoria
-- [ ] RegSlice en el camino de datos
-- [ ] Convertidor de protocolo si hay AXI4-Lite ↔ AXI4-Stream
-- [ ] Convertidor de reloj si hay dominios diferentes
-- [ ] Longitud de burst ≥ tamaño de bloque NanoVDB / ancho de datos
-- [ ] No hay ráfagas estrechas ( Narrow Burst ) que degraden el ancho de banda
+### 3.3 Mandatory checks
+- [ ] FIFO present between AXI DMA and memory
+- [ ] RegSlice in the data path
+- [ ] Protocol converter if AXI4-Lite ↔ AXI4-Stream
+- [ ] Clock converter if different clock domains
+- [ ] Burst length ≥ NanoVDB block size / data width
+- [ ] No narrow bursts that degrade bandwidth
 
-### 3.4 Diagnóstico rápido
-| Síntoma | Causa probable | Solución |
-|---------|----------------|----------|
-| Ancho de banda bajo | Falta RegSlice | Insertar RegSlice en el camino |
-| Datos corruptos | Falta convertidor de reloj | Agregar clock domain crossing |
-| Timeout | FIFO pequeño | Aumentar depth del FIFO |
-| Burst cortos | Configuración por defecto | Ajustar `max_burst_len` en AXI DMA |
+### 3.4 Quick diagnosis
+| Symptom | Likely cause | Fix |
+|---------|--------------|-----|
+| Low bandwidth | Missing RegSlice | Insert RegSlice in path |
+| Corrupt data | Missing clock converter | Add clock domain crossing |
+| Timeout | FIFO too small | Increase FIFO depth |
+| Short bursts | Default config | Adjust `max_burst_len` in AXI DMA |
 
-## Día 4 — Conexión con el pipeline CUDA
+## Day 4 — Connect CUDA pipeline
 
-### Mapeo de datos
+### Data mapping
 ```
 NanoVDB GridHandle
     → device pointer
-    → AXI DMA (buffer lineal)
-    → FPGA (procesamiento)
-    → resultado → host
+    → AXI DMA (linear buffer)
+    → FPGA (processing)
+    → result → host
 ```
 
-### Checklist final
-- [ ] Script TCL pasa sin errores
-- [ ] AXI DMA puede transferir bloques de 64KB (típico para NanoVDB)
-- [ ] Clock domains están aislados correctamente
-- [ ] No hay overflow en FIFOs con carga máxima
+### Final checklist
+- [ ] TCL script passes without errors
+- [ ] AXI DMA can transfer 64KB blocks (typical for NanoVDB)
+- [ ] Clock domains are correctly isolated
+- [ ] No FIFO overflow at maximum load

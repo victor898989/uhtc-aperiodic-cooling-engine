@@ -1,48 +1,48 @@
-# Análisis guiado de OpenVDB IO (Archive.cc)
+# Guided analysis of OpenVDB IO (Archive.cc)
 
-Objetivo: entender cómo OpenVDB prepara los voxeles para transmisión hardware, separado en 4 bloques.
+Goal: understand how OpenVDB prepares voxels for hardware transmission, split into 4 blocks.
 
-## Día 1 — Estado del stream, metadatos y archivo mapeado
+## Day 1 — Stream state, metadata and mapped file
 
 ### 1.1 `StreamMetadata`
-- Es el “registro de control” del stream.
-- Guarda: versión de archivo, compresión, clase de grid, puntero a archivo mapeado, metadatos de carga diferida.
-- Analogía hardware: registros AXI-Lite que configuran el DMA antes de un burst.
+- This is the stream's "control record".
+- Stores: file version, compression, grid class, mapped file pointer, delayed-load metadata.
+- Hardware analogy: AXI-Lite registers that configure the DMA before a burst.
 
 ### 1.2 `StreamState`
-- Estado interno del stream durante lectura/escritura.
-- Permite hacer `seek`, `tell`, y guardar/restaurar posición.
-- Analogía hardware: puntero de buffer circular en DRAM.
+- Internal stream state during read/write.
+- Allows `seek`, `tell`, and save/restore of position.
+- Hardware analogy: circular buffer pointer in DRAM.
 
 ### 1.3 `MappedFile` (boost::interprocess)
-- Mapea el archivo `.vdb` completo en memoria virtual.
-- Permite acceso aleatorio sin cargar todo en RAM.
-- Analogía hardware: MMU / scatter-gather para streaming volumétrico.
+- Maps the `.vdb` file into virtual memory.
+- Allows random access without loading the full volume into RAM.
+- Hardware analogy: MMU / scatter-gather for volumetric streaming.
 
-## Día 2 — Compresión y carga diferida
+## Day 2 — Volumetric compression and delayed loading
 
 ### 2.1 `PopulateDelayedLoadMetadataOp`
-- Recorre cada `LeafNode`.
-- Por hoja calcula:
-  - Máscara de voxeles activos
-  - Tamaño comprimido
-  - Offset dentro del archivo
-- Genera los “descriptores DMA” para cada bloque de voxeles.
+- Iterates over each `LeafNode`.
+- Per leaf it calculates:
+  - Active voxel mask
+  - Compressed size
+  - Offset within the file
+- Generates the "DMA descriptors" for each voxel block.
 
 ### 2.2 `writeCompressedValuesSize`
-- Calcula el tamaño exacto de los valores comprimidos.
-- Usa `zlib`/`blosc` dependiendo de la configuración.
-- Importante para planificar bursts AXI y evitar overflow de FIFO.
+- Calculates the exact size of compressed values.
+- Uses `zlib`/`blosc` depending on configuration.
+- Important for planning AXI bursts and avoiding FIFO overflow.
 
-## Día 4 — Conexión con NanoVDB y FPGA
+## Day 4 — Connection with NanoVDB and FPGA
 
-### Flujo esperado
-1. OpenVDB produce `geometry_voxels.bin` y `thermal_field.bin`
-2. NanoVDB convierte a `GridHandle` en GPU
-3. AXI DMA mueve bloques desde DRAM a FPGA
-4. Núcleo XRT procesa voxeles en PL
+### Expected flow
+1. OpenVDB produces `geometry_voxels.bin` and `thermal_field.bin`
+2. NanoVDB converts to a `GridHandle` on GPU
+3. AXI DMA moves blocks from DRAM to FPGA
+4. XRT kernel processes voxels in PL
 
-### Puntos de verificación
-- [ ] Archive.cc compila con `NANOVDB_USE_OPENVDB=1`
-- [ ] Los metadatos de carga diferida se generan sin errores
-- [ ] El tamaño de bloque coincide con el ancho de datos AXI (64/128 bits)
+### Checkpoints
+- [ ] Archive.cc compiles with `NANOVDB_USE_OPENVDB=1`
+- [ ] Delayed-load metadata is generated without errors
+- [ ] Block size matches AXI data width (64/128 bits)
