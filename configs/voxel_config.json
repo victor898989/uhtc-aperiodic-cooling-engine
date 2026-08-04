@@ -1,0 +1,8 @@
+{
+  "voxel_size": 0.05,
+  "grid_resolution": [256, 256, 256],
+  "world_size": [12.8, 12.8, 12.8],
+  "interior_threshold": 0.0,
+  "exterior_threshold": 0.0,
+  "narrow_band_width": 3
+}

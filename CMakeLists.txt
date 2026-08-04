@@ -10,6 +10,16 @@ set(CMAKE_CUDA_STANDARD 17)
 add_subdirectory(src/Native)
 
 # ==================================================================
+#  OpenVDB-3D-Printing Engine modules
+# ==================================================================
+enable_testing()
+add_subdirectory(src/core)
+add_subdirectory(src/cuda)
+add_subdirectory(src/slicing)
+add_subdirectory(src/io)
+add_subdirectory(tests)
+
+# ==================================================================
 #  Summary
 # ==================================================================
 message(STATUS "")

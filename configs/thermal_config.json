@@ -1,0 +1,21 @@
+{
+  "material": {
+    "density": 6100.0,
+    "specific_heat": 340.0,
+    "thermal_conductivity": 80.0,
+    "emissivity": 0.75
+  },
+  "laser": {
+    "power": 200.0,
+    "scan_speed": 800.0,
+    "beam_diameter": 0.1
+  },
+  "boundary_conditions": {
+    "ambient_temperature": 298.15,
+    "convection_coefficient": 10.0
+  },
+  "time": {
+    "dt": 1e-4,
+    "steps": 1000
+  }
+}

@@ -63,6 +63,8 @@ target_include_directories(uhtc_native_accel PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/FPGA/hls
     ${CMAKE_CURRENT_SOURCE_DIR}/Common
     ${CMAKE_CURRENT_SOURCE_DIR}/../CSharp/Interop
+    ${CMAKE_CURRENT_SOURCE_DIR}/../cuda
+    ${CMAKE_CURRENT_SOURCE_DIR}/../io/bin
 )
 
 # ==================================================================

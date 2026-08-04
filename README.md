@@ -29,26 +29,35 @@ uhtc-aperiodic-cooling-engine/
 │   ├── materials/               # Notes on UHTC, Modified Boron Silicate, ZrB2/Ta
 │   └── architecture/            # Software and Data Flow Diagrams
 ├── src/
-│   ├── Core/
-│   │   ├── Quasicrystals/       # Generators of 6D aperiodic geometries and Golden Rhombohedra
-│   │   └── Materials/           # Models of O₂ degradation, tortuosity, and CTE gradient
-│   ├── Cooling/
-│   │   └── Lattice/             # Integration with LEAP71_LatticeLibrary (Gyroids/TPMS)
-│   ├── Macro/
-│   │   └── ShapeKernel/         # Integration with LEAP71_ShapeKernel (Aerothermal envelopes)
-│   ├── Runtime/
-│   │   ├── PikoGK/              # Implicit volumetric engine and Voxel rendering
-│   │   └── OpenDVB/             # C++ runtime abstraction layer for continuous geometry
-│   └── Acceleration/
-│       ├── XRT/                 # Xilinx Runtime Layer (C++ Host Code)
-│       ├── Kernels/             # PL acceleration kernels (Vivado/HLS)
-│       └── AIE/                 # Parallelized algorithms for Vitis AI Engine (Versal ACAP)
+│   ├── CSharp/                  # C# orchestration (LEAP71, PikoGK bridge, physics)
+│   ├── Native/                  # Existing CUDA/FPGA runtime and kernels
+│   ├── Slices/                  # Legacy slice/bits-map tooling
+│   ├── core/
+│   │   ├── fields/              # Campos escalares: densidad, temperatura, porosidad
+│   │   ├── geometry/            # Import/export de mallas, volúmenes
+│   │   └── math/                # Kernels matemáticos: gradientes, divergencia, laplaciano
+│   ├── cuda/
+│   │   ├── kernels/             # Kernels CUDA: voxelización, dilatación, erosión, ∇T
+│   │   ├── runtime/             # Gestión de memoria GPU, streams, pipelines
+│   │   └── nanovdb/             # Integración con NanoVDB (OpenVDB en GPU)
+│   ├── slicing/
+│   │   ├── png16/               # Export slices 16-bit
+│   │   └── marching/            # Marching cubes / marching tetrahedra
+│   └── io/
+│       ├── json/                # Configuración
+│       └── bin/                 # Formatos binarios (OpenVDB IO)
+├── configs/
+│   ├── voxel_config.json
+│   ├── thermal_config.json
+│   └── slicing_config.json
 ├── tests/
-│   ├── Physics/                 # Monte Carlo for O₂ tortuosity and thermomechanical analysis (∇T)
-│   ├── Geometry/                # Testbenches for airtightness and 0% error chordal
-│   └── Hardware/                # XRT/AIE Performance Benchmarks
-├── slices/                      # Direct Bitmap Export (PNG 16-bit/CLI)
+│   ├── geometry/
+│   ├── thermal/
+│   └── cuda/
+├── tasks/
+│   └── TASKS.md
+├── cmake/
+├── build/
 ├── LICENSE
 └── README.md                    # Main Project Documentation
-
-# github: https://github.com/AcademySoftwareFoundation/openvdb/blob/master/nanovdb/nanovdb/examples/ex_dilate_nanovdb_cuda/dilate_nanovdb_cuda.cpp
+```

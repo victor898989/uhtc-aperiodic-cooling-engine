@@ -1,0 +1,13 @@
+{
+  "slice_height": 0.05,
+  "output_format": "png16",
+  "marching_cubes": {
+    "enabled": true,
+    "iso_value": 0.0
+  },
+  "export": {
+    "geometry_voxels_bin": "build/output/geometry_voxels.bin",
+    "thermal_field_bin": "build/output/thermal_field.bin",
+    "slice_pattern": "build/output/slice_{index:04d}.png"
+  }
+}
