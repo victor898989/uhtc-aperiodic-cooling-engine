@@ -1,0 +1,15 @@
+{
+  "chamber_length_mm": 200.0,
+  "chamber_radius_mm": 50.0,
+  "nose_length_mm": 80.0,
+  "nose_radius_mm": 50.0,
+  "wall_thickness_mm": 5.0,
+  "lattice_freq_mm": 2.0,
+  "lattice_wall_thickness": 0.15,
+  "enable_lattice": true,
+  "voxel_size_mm": 0.5,
+  "T_ambient_K": 300.0,
+  "convection_coeff": 10.0,
+  "dt": 1e-5,
+  "Q_combustion_W_mm3": 50.0
+}

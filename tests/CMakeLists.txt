@@ -41,3 +41,19 @@ add_test(NAME printer_profiles_smoke COMMAND printer_profiles_smoke_test)
 add_executable(wov2_structure_smoke_test printing/wov2_structure_smoke.cpp)
 target_include_directories(wov2_structure_smoke_test PRIVATE ${CMAKE_SOURCE_DIR}/src/printing)
 add_test(NAME wov2_structure_smoke COMMAND wov2_structure_smoke_test)
+
+if(CMAKE_CUDA_COMPILER)
+    add_executable(rocket_structure_smoke_test cuda/rocket_structure_smoke.cu)
+    set_target_properties(rocket_structure_smoke_test PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+    target_include_directories(rocket_structure_smoke_test PRIVATE
+        ${CMAKE_SOURCE_DIR}/src/Native/Cuda
+        ${CMAKE_SOURCE_DIR}/src/cuda
+        ${CMAKE_SOURCE_DIR}/src/io/bin
+    )
+    target_link_libraries(rocket_structure_smoke_test PRIVATE uhtc_native_accel)
+    add_test(NAME rocket_structure_smoke COMMAND rocket_structure_smoke_test
+             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/configs)
+    set_tests_properties(rocket_structure_smoke PROPERTIES
+        DISABLED $<NOT:$<BOOL:${CUDA_FOUND}}>>
+        LABELS "cuda;rocket;nanovdb;uhc")
+endif()

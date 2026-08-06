@@ -30,6 +30,9 @@ set(UHC_CUDA_SOURCES
     Cuda/nanovdb.cu
     Cuda/dilate_nanovdb_cuda.cpp
     Cuda/dilate_nanovdb_cuda_kernels.cu
+    Cuda/uhc_rocket_structure.cu
+    Cuda/uhc_rocket_structure_api.cu
+    Cuda/uhc_rocket_structure.h
     Cuda/main.cc
     Cuda/Maps.cc
     Cuda/Transform.cc
@@ -129,6 +132,30 @@ target_include_directories(uhc_cuda_test_harness PRIVATE
 )
 target_link_libraries(uhc_cuda_test_harness PRIVATE uhtc_native_accel)
 
+# ==================================================================
+#  Rocket structure smoke test
+# ==================================================================
+add_executable(uhc_rocket_structure_smoke
+    ../../tests/cuda/rocket_structure_smoke.cu
+    Cuda/uhc_rocket_structure_api.cu
+    Cuda/uhc_rocket_structure.h
+    Cuda/uhc_material_properties.h
+)
+set_target_properties(uhc_rocket_structure_smoke PROPERTIES
+    CUDA_SEPARABLE_COMPILATION ON
+    CUDA_ARCHITECTURES "70;75;80;86"
+)
+target_compile_definitions(uhc_rocket_structure_smoke PRIVATE
+    NANOVDB_USE_CUDA=1
+    NANOVDB_USE_OPENVDB=1
+)
+target_include_directories(uhc_rocket_structure_smoke PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/Cuda
+    ${CMAKE_CURRENT_SOURCE_DIR}/../cuda
+    ${CMAKE_CURRENT_SOURCE_DIR}/../io/bin
+)
+target_link_libraries(uhc_rocket_structure_smoke PRIVATE uhtc_native_accel)
+
 # Register with ctest (only if CUDA is available)
 if(CMAKE_CUDA_COMPILER)
     enable_testing()
@@ -138,6 +165,12 @@ if(CMAKE_CUDA_COMPILER)
     set_tests_properties(uhc_cuda_kernel_tests PROPERTIES
         DISABLED $<NOT:$<BOOL:${CUDA_FOUND}>>
         LABELS "cuda;native")
+    add_test(NAME uhc_rocket_structure_smoke
+             COMMAND uhc_rocket_structure_smoke
+             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../configs)
+    set_tests_properties(uhc_rocket_structure_smoke PROPERTIES
+        DISABLED $<NOT:$<BOOL:${CUDA_FOUND}>>
+        LABELS "cuda;rocket;nanovdb")
 endif()
 
 # ==================================================================
