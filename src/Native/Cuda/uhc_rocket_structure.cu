@@ -282,10 +282,7 @@ static void initialiseRocketMaterials(RocketGeometry& geo,
 __global__ void kernel_rocket_thermal_step(
     float* __restrict__       d_T_new,
     const float* __restrict__ d_T_old,
-    const float* __restrict__ d_k,
-    const float* __restrict__ d_rho,
-    const float* __restrict__ d_cp,
-    const float* __restrict__ d_eps,
+    const float* __restrict__ d_matId,
     const float* __restrict__ d_tort,
     const float* __restrict__ d_thk,
     const int*   __restrict__ d_active,
@@ -294,7 +291,7 @@ __global__ void kernel_rocket_thermal_step(
     float dx,
     int   dimX, int dimY, int dimZ,
     float dt,
-    float Q_combustion_W_mm3) /* volumetric heat source [W/mm³] */
+    float Q_combustion_W_mm3)
 {
     int ix = blockIdx.x * blockDim.x + threadIdx.x;
     int iy = blockIdx.y * blockDim.y + threadIdx.y;
@@ -310,12 +307,19 @@ __global__ void kernel_rocket_thermal_step(
     }
 
     float T = d_T_old[idx];
-    float k  = d_k      ? d_k[idx]      : 30.0f;
-    float rho= d_rho    ? d_rho[idx]    : 6.0f;
-    float cp = d_cp     ? d_cp[idx]     : 0.5f;
-    float eps= d_eps    ? d_eps[idx]    : 0.75f;
-    float tort = d_tort ? d_tort[idx]   : 1.0f;
-    float thk  = d_thk  ? d_thk[idx]    : 0.0f;
+    float matId = d_matId ? d_matId[idx] : 0.0f;
+    uhc::MaterialID m = uhc::MAT_ZRB2;
+    if      (matId >= 2.5f) m = uhc::MAT_HFC;
+    else if (matId >= 1.5f) m = uhc::MAT_TAC;
+    else if (matId >= 0.5f) m = uhc::MAT_ZRB2;
+    else                    m = uhc::MAT_POWDER_ZRB2;
+
+    float k    = uhc::thermal_conductivity(m, T);
+    float rho  = uhc::density(m, T);
+    float cp   = uhc::specific_heat(m, T);
+    float eps  = uhc::emissivity(m, T);
+    float tort = d_tort ? d_tort[idx] : 1.0f;
+    float thk  = d_thk  ? d_thk[idx]  : 0.0f;
 
     /* 7-point Laplacian */
     int idx_xp = ix + 1 < dimX ? idx + 1       : idx;
@@ -331,16 +335,16 @@ __global__ void kernel_rocket_thermal_step(
                  6.0f * T) / (dx * dx);
 
     /* thermal diffusivity [mm²/s] */
-    float alpha = uhc::thermal_diffusivity(uhc::MAT_ZRB2, T);
+    float alpha = uhc::thermal_diffusivity(m, T);
 
     /* combustion heat source (constant volumetric for demo) */
     float Q_comb = Q_combustion_W_mm3;
 
-    /* top surface: radiation + convection */
+    /* top surface: radiation + convection using per-voxel material */
     float Q_conv = 0.0f, Q_rad = 0.0f;
     if (iz == dimZ - 1) {
         Q_conv = h_conv * (T - T_ambient_K);
-        Q_rad  = uhc::radiative_heat_flux(uhc::MAT_ZRB2, T, T_ambient_K);
+        Q_rad  = uhc::radiative_heat_flux(m, T, T_ambient_K);
     }
 
     /* oxygen barrier modulation:
@@ -372,19 +376,13 @@ public:
     RocketGeometry      geometry;
     nanovdb::GridHandle<BufferT> h_T;
     nanovdb::GridHandle<BufferT> h_T_next;
-    nanovdb::GridHandle<BufferT> h_k;
-    nanovdb::GridHandle<BufferT> h_rho;
-    nanovdb::GridHandle<BufferT> h_cp;
-    nanovdb::GridHandle<BufferT> h_eps;
-    nanovdb::GridHandle<BufferT> h_tort;
-    nanovdb::GridHandle<BufferT> h_thk;
+    nanovdb::GridHandle<BufferT> h_mat;
+    nanovdb::GridHandle<BufferT> h_tort_grid;
+    nanovdb::GridHandle<BufferT> h_thk_grid;
 
     Grid<FloatTree>* d_T      = nullptr;
     Grid<FloatTree>* d_T_next = nullptr;
-    Grid<FloatTree>* d_k      = nullptr;
-    Grid<FloatTree>* d_rho    = nullptr;
-    Grid<FloatTree>* d_cp     = nullptr;
-    Grid<FloatTree>* d_eps    = nullptr;
+    Grid<FloatTree>* d_matId  = nullptr;
     Grid<FloatTree>* d_tort   = nullptr;
     Grid<FloatTree>* d_thk    = nullptr;
 
@@ -413,22 +411,46 @@ public:
 #if defined(NANOVDB_USE_CUDA)
         size_t n = (size_t)dimX * dimY * dimZ;
         std::vector<float> h_T_arr(n, T_ambient_K);
+        std::vector<float> h_matId(n);
+        std::vector<float> h_tort(n, 1.0f);
+        std::vector<float> h_thk(n, 0.0f);
+
+        auto accMat  = geometry.material->getConstAccessor();
+        auto accTort = geometry.tortuosity->getConstAccessor();
+        auto accThk  = geometry.thickness->getConstAccessor();
+
+        for (int iz = 0; iz < dimZ; ++iz)
+        for (int iy = 0; iy < dimY; ++iy)
+        for (int ix = 0; ix < dimX; ++ix) {
+            size_t idx = (size_t)iz * dimX * dimY + (size_t)iy * dimX + (size_t)ix;
+            float matId = accMat.getValue(openvdb::Coord(ix, iy, iz));
+            h_matId[idx] = matId;
+            h_tort[idx]  = accTort.getValue(openvdb::Coord(ix, iy, iz));
+            h_thk[idx]   = accThk.getValue(openvdb::Coord(ix, iy, iz));
+        }
 
         h_T      = nanovdb::tools::createNanoGrid(*geometry.sdf);
         h_T_next = nanovdb::tools::createNanoGrid(*geometry.sdf);
+        h_mat      = nanovdb::tools::createNanoGrid(*geometry.material);
+        h_tort_grid= nanovdb::tools::createNanoGrid(*geometry.tortuosity);
+        h_thk_grid = nanovdb::tools::createNanoGrid(*geometry.thickness);
 
-        h_T.deviceUpload();
-        h_T_next.deviceUpload();
+        h_T.deviceUpload(); h_T_next.deviceUpload();
+        h_mat.deviceUpload(); h_tort_grid.deviceUpload(); h_thk_grid.deviceUpload();
 
         d_T      = h_T.deviceGrid<float>();
         d_T_next = h_T_next.deviceGrid<float>();
+        d_matId  = h_mat.deviceGrid<float>();
+        d_tort   = h_tort_grid.deviceGrid<float>();
+        d_thk    = h_thk_grid.deviceGrid<float>();
 
-        cudaMemcpy((float*)d_T->data(), h_T_arr.data(), n * sizeof(float),
-                   cudaMemcpyHostToDevice);
-        cudaMemcpy((float*)d_T_next->data(), h_T_arr.data(), n * sizeof(float),
-                   cudaMemcpyHostToDevice);
+        cudaMemcpy((float*)d_T->data(), h_T_arr.data(), n * sizeof(float), cudaMemcpyHostToDevice);
+        cudaMemcpy((float*)d_T_next->data(), h_T_arr.data(), n * sizeof(float), cudaMemcpyHostToDevice);
+        cudaMemcpy((float*)d_matId->data(), h_matId.data(), n * sizeof(float), cudaMemcpyHostToDevice);
+        cudaMemcpy((float*)d_tort->data(), h_tort.data(), n * sizeof(float), cudaMemcpyHostToDevice);
+        cudaMemcpy((float*)d_thk->data(), h_thk.data(), n * sizeof(float), cudaMemcpyHostToDevice);
 
-        printf("[Rocket] NanoVDB grids uploaded to device: %zu voxels\n",
+        printf("[Rocket] Device upload: %zu voxels, 5 grids (T, T_next, matId, tort, thk)\n",
                (unsigned long long)n);
 #else
         printf("[Rocket] CPU fallback — step will be skipped\n");
@@ -446,10 +468,7 @@ public:
         kernel_rocket_thermal_step<<<grid, block>>>(
             (float*)d_T_next->data(),
             (float*)d_T->data(),
-            (float*)d_k->data(),
-            (float*)d_rho->data(),
-            (float*)d_cp->data(),
-            (float*)d_eps->data(),
+            (float*)d_matId->data(),
             (float*)d_tort->data(),
             (float*)d_thk->data(),
             nullptr,

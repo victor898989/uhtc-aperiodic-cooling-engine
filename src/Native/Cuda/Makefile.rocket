@@ -1,0 +1,65 @@
+.PHONY: help build run clean ctest gtkwave
+
+NVCC        ?= nvcc
+CUDA_ARCH   ?= -arch=sm_70
+CXX_STD     ?= -std=c++17
+CUDA_DEFS   := -DNANOVDB_USE_CUDA -DNANOVDB_USE_OPENVDB
+INCLUDES    := -I./src/Native/Cuda -I./third_party/nanovdb/include -I./third_party/openvdb/include
+LDFLAGS     := -lnanovdb -lopenvdb
+
+BIN_DIR     := ./build/bin
+OBJ_DIR     := ./build/obj
+
+ROCKET_BIN  := $(BIN_DIR)/rocket_structure_smoke
+ROCKET_CFG := ./configs/rocket_structure_config.json
+
+.PHONY: help build run clean ctest gtkwave
+
+help:
+	@echo "UHTC Rocket Voxel Engine — Build & Run"
+	@echo ""
+	@echo "Targets:"
+	@echo "  build        Compile rocket_structure_smoke"
+	@echo "  run          Run with default config"
+	@echo "  run-cfg CFG=path  Run with custom config"
+	@echo "  ctest        Run ctest (requires cmake build)"
+	@echo "  gtkwave      Open VHDL waveform (if available)"
+	@echo "  clean        Remove build artifacts"
+
+$(BIN_DIR):
+	mkdir -p $(BIN_DIR)
+
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
+
+build: $(ROCKET_BIN)
+
+$(ROCKET_BIN): $(BIN_DIR) $(OBJ_DIR) \
+               src/Native/Cuda/uhc_rocket_structure.cu \
+               src/Native/Cuda/uhc_rocket_structure_api.cu \
+               src/Native/Cuda/uhc_rocket_structure.h \
+               tests/cuda/rocket_structure_smoke.cu
+	$(NVCC) $(CXX_STD) $(CUDA_ARCH) $(CUDA_DEFS) $(INCLUDES) \
+	    src/Native/Cuda/uhc_rocket_structure_api.cu \
+	    src/Native/Cuda/uhc_rocket_structure.cu \
+	    tests/cuda/rocket_structure_smoke.cu \
+	    -o $@
+	@echo "Built: $@"
+
+run: build
+	@echo "Running rocket structure smoke test..."
+	$(ROCKET_BIN) $(ROCKET_CFG)
+
+run-cfg: build
+	@echo "Running with config: $(CFG)"
+	$(ROCKET_BIN) $(CFG)
+
+ctest:
+	@echo "Running ctest..."
+	cd build && ctest -R rocket_structure_smoke -V
+
+gtkwave:
+	gtkwave hardware/zcu104/testbenches/uhc_zcu104.ghw 2>/dev/null || echo "gtkwave not installed"
+
+clean:
+	rm -rf build/bin build/obj *.ghw *.wdb *.nvdb *.vdb
